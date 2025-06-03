@@ -62,11 +62,13 @@ WOA算法将优化问题的搜索空间想象成海洋，将潜在解视为鲸�
 
 **位置更新公式**：计算当前个体与暂时最优个体之间的距离、更新当前位置
 $$
-\overrightarrow{D} = \left| \overrightarrow{C} \cdot \overrightarrow{X^{*}}(t) - \overrightarrow{X}(t) \right| \tag{1}
+\overrightarrow{D}=\left|\overrightarrow{C}\cdot\overrightarrow{X^*}(t)-\overrightarrow{X}(t)\right|
+\tag{1}
 $$
 
 $$
-\overrightarrow{X}(t+1) = \overrightarrow{X^{*}}(t) - \overrightarrow{A} \cdot \overrightarrow{D} \tag{2}
+\overrightarrow{X}(t+1)=\overrightarrow{X}^{*}(t)-\overrightarrow{A}\cdot\overrightarrow{D}
+\tag{2}
 $$
 
 其中：
@@ -106,18 +108,19 @@ $$
   - 位置更新公式：
 
   $$
-  \overrightarrow{X}(t+1) = \overrightarrow{D'} \cdot e^{bl} \cdot \cos(2\pi l) + \overrightarrow{X^{*}}(t) \tag{5}
+  a=a_{max}-t\cdot\frac{a_{max}}{T_{max}} \tag{5}
   $$
 
   - 其中，$\overrightarrow{D'} = | \overrightarrow{X^{*}}(t) - \overrightarrow{X}(t) |$ 为当前鲸鱼个体到最优个体的距离向量，同式 (1)。
   - **选择机制**：以 **50%** 概率选择**收缩**或**螺旋**更新：
 
   $$
-  \overrightarrow{X}(t+1) = 
-  \begin{cases} 
-  \overrightarrow{X^{*}}(t) - \overrightarrow{A} \cdot \overrightarrow{D} & \text{if } p < 0.5 \\
-  \overrightarrow{D'} \cdot e^{bl} \cdot \cos(2\pi l) + \overrightarrow{X^{*}}(t) & \text{if } p \geq 0.5 
-  \end{cases} \tag{6}
+  \overrightarrow{X}(t+1)=
+  \begin{cases}
+  \overrightarrow{X}^{*}(t)-\overrightarrow{A}\cdot\overrightarrow{D} & \mathrm{if~}p<0.5 \\
+  \overrightarrow{D}^{t}\cdot e^{bl}\cdot\cos(2\pi l)+\overrightarrow{X}^{*}(t) & \mathrm{if~}p\geq0.5 & 
+  \end{cases} 
+  \tag{6}
   $$
 
 ----
@@ -128,11 +131,16 @@ $$
 - 体现在，当 $|\overrightarrow{A}| \geq 1$ 时，进行全局探索：
 
 $$
-\overrightarrow{D} = \left| \overrightarrow{C} \cdot \overrightarrow{X_{rand}} - \overrightarrow{X} \right| \tag{7}
+\overrightarrow{D}=
+\begin{vmatrix}
+\overrightarrow{C}\cdot\overrightarrow{X_{rand}}-\overrightarrow{X}
+\end{vmatrix} 
+\tag{7}
 $$
 
 $$
-\overrightarrow{X}(t+1) = \overrightarrow{X_{rand}} - \overrightarrow{A} \cdot \overrightarrow{D} \tag{8}
+\overrightarrow{X}(t+1)=\overrightarrow{X_{rand}}-\overrightarrow{A}\cdot\overrightarrow{D} 
+\tag{8}
 $$
 
 - 其中，$\overrightarrow{X_{rand}}$ 为随机选择的鲸鱼个体。
@@ -442,10 +450,10 @@ pip install tqdm  # 进度条工具，可选
 
 模拟白鲸在三维空间中的自由游动，如俯仰、滚转、偏航：
 $$
-\overrightarrow{X_{i}^{t+1}} = 
-\begin{cases} 
-\overrightarrow{X_{i,j}^t} + (\overrightarrow{X_{r,j}^t} - \overrightarrow{X_{i,j}^t}) \cdot (1 + r_1) \cdot \sin(2\pi r_2), & j \text{ 为偶数维} \\
-\overrightarrow{X_{i,j}^t} + (\overrightarrow{X_{r,j}^t} - \overrightarrow{X_{i,j}^t}) \cdot (1 + r_1) \cdot \cos(2\pi r_2), & j \text{ 为奇数维} 
+\overrightarrow{X}_{i}^{t+1}=
+\begin{cases}
+\overrightarrow{X}_{i,j}^{t}+(\overrightarrow{X}_{r_{j}}^{t}-\overrightarrow{X}_{i,j}^{t})\cdot(1+r_{1})\cdot\sin(2\pi r_{2}), & j\text{ 为偶数维 } \\
+\overrightarrow{X}_{i,j}^{t}+(\overrightarrow{X}_{r_{j}}^{t}-\overrightarrow{X}_{i,j}^{t})\cdot(1+r_{1})\cdot\cos(2\pi r_{2}), & j\text{ 为奇数维 }
 \end{cases}
 \tag{9}
 $$
@@ -459,7 +467,7 @@ $$
 
 同时随迭代递减的**平衡因子**：
 $$
-B_f = B_0 \cdot (1 - t/(2T_{max})) \tag{10}
+B_f=B_0\cdot(1-t/(2T_{max})) \tag{10}
 $$
 其中，
 
@@ -472,7 +480,8 @@ $$
 
 模拟白鲸合作围捕鱼群向最优个体聚集的行为，即：
 $$
-\overrightarrow{X_{i}^{t+1}} = r_4 \cdot \overrightarrow{X_{best}^t} - r_5 \cdot \overrightarrow{X_{i}^t} + C_1 \cdot \overrightarrow{L} \cdot (\overrightarrow{X_{r}^t} - \overrightarrow{X_{i}^t}) \tag{11}
+\overrightarrow{X_i^{t+1}}=r_4\cdot\overrightarrow{X_{best}^t}-r_5\cdot\overrightarrow{X_i^t}+C_1\cdot\overrightarrow{L}\cdot(\overrightarrow{X_r^t}-\overrightarrow{X_i^t})
+\tag{11}
 $$
 
 
@@ -484,8 +493,7 @@ $$
 - $\overrightarrow{L}$：莱维飞行步长，增强全局搜索能力，当 $r_3 \geq B_f$ 时执行捕食行为：
 
 $$
-\overrightarrow{L} = \frac{0.05 \times u \times \sigma}{|v|^{1/\beta}} \\
- \sigma = \left( \frac{\Gamma(1+\beta) \times \sin(\pi\beta/2)}{\Gamma((1+\beta)/2) \times \beta \times 2^{(\beta-1)/2}} \right)^{1/\beta} \tag{12}
+\overrightarrow{L}=\frac{0.05\times u\times\sigma}{|v|^{1/\beta}} \tag{12}
 $$
 
 ---
@@ -494,7 +502,7 @@ $$
 
 模拟白鲸死亡沉入海底，避免种群陷入局部最优，筛选规则：
 $$
-\overrightarrow{X_{i}^{t+1}} = r_6 \cdot \overrightarrow{X_{best}^t} - r_7 \cdot \overrightarrow{X_{r}^t} + C_2 \cdot \overrightarrow{F} \cdot \overrightarrow{X_{step}} \tag{13}
+\overrightarrow{X_i^{t+1}}=r_6\cdot\overrightarrow{X_{best}^t}-r_7\cdot\overrightarrow{X_r^t}+C_2\cdot\overrightarrow{F}\cdot\overrightarrow{X_{step}}\tag{13}
 $$
 其中，
 
@@ -504,12 +512,12 @@ $$
 - $\overrightarrow{X_{step}}$：鲸落步长：
 
 $$
-\overrightarrow{X_{step}} = (u_b - l_b) \cdot \exp(-C_3 \cdot t/T_{max}) \tag{14}
+\overrightarrow{X_{step}}=(u_b-l_b)\cdot\exp(-C_3\cdot t/T_{max}) \tag{14}
 $$
 
 以概率 $W_f$ 选择部分个体进行更新，鲸落概率随迭代递减：
 $$
- W_f = 0.1 - 0.05 \cdot t/T_{max} \tag{15}
+W_f=0.1-0.05\cdot t/T_{max} \tag{15}
 $$
 
 ---
